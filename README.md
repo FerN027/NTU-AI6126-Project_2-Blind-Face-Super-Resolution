@@ -1,1 +1,1 @@
-# NTU-AI6126-Project_2-Blind-Face-Super-Resolution
+# Blind Face Super-Resolution
