@@ -14,7 +14,7 @@ def train(args, opt, device, train_loader, val_loader):
     """
     0. Initialize the model
     """
-    model = BlindSR()
+    model = RCAN()
     model = model.to(device)
 
 

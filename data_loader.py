@@ -6,7 +6,7 @@ def get_data_loader(which_loader: str, dataset, args):
         return DataLoader(
             dataset,
             shuffle=True,
-            pin_memory=True,
+            # pin_memory=True,
             batch_size=args.batch_size,
             num_workers=args.num_workers
         )
