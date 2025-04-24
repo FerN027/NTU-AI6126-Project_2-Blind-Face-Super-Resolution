@@ -127,7 +127,7 @@ def get_parser():
     parser.add_argument(
         "--learning_rate", "-lr",
         type=float,
-        default=0.001,
+        default=0.0001,
         help="Learning rate for the optimizer.",
     )
     # ----------------------------------------------------------------------
@@ -273,3 +273,29 @@ def degradation(batch_dict, opt, device):
     
     # Return both GT and LQ
     return {'gt': gt, 'lq': lq}
+
+# return a list! do the average in the end
+def compute_psnr(sr_batch, gt_batch):
+    sr_batch = sr_batch.detach().cpu().numpy()
+    gt_batch = gt_batch.detach().cpu().numpy()
+
+    batch_size = sr_batch.shape[0]
+    psnr_values = []
+
+    for i in range(batch_size):
+        # Get single image from batch
+        sr_img = sr_batch[i].transpose(1, 2, 0)  # CHW to HWC
+        gt_img = gt_batch[i].transpose(1, 2, 0)  # CHW to HWC
+        
+        # Scale to 0-255 range as in evaluate.py's read_image function
+        sr_img = sr_img * 255.0
+        gt_img = gt_img * 255.0
+        
+        # Use the exact PSNR function from evaluate.py
+        mse_value = np.mean((sr_img - gt_img)**2)
+        psnr_value = 20. * np.log10(255. / np.sqrt(mse_value))
+        psnr_values.append(psnr_value)
+    
+    assert len(psnr_values) == batch_size, "Mismatch in PSNR values count"
+    
+    return psnr_values
