@@ -15,7 +15,7 @@ def get_data_loader(which_loader: str, dataset, args):
         return DataLoader(
             dataset,
             shuffle=False,
-            batch_size=args.batch_size * 2,
+            batch_size=args.batch_size,
             num_workers=args.num_workers
         )
 
