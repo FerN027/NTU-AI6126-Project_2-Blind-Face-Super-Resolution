@@ -146,6 +146,9 @@ def modify_opt(args, opt):
     opt['dataroot_gt'] = args.input_dir + '/train/GT'
     opt['meta_info'] = args.input_dir + '/train/meta_info_FFHQ6000sub_GT.txt'
 
+    opt['val_gt'] = args.input_dir + '/val/GT'
+    opt['val_lq'] = args.input_dir + '/val/LQ'
+
     return opt
 
 # Also move them to input device
