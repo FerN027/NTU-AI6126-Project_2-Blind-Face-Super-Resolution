@@ -1,5 +1,7 @@
+import os
 import time
 import numpy as np
+import matplotlib.pyplot as plt
 
 import torch
 import torch.nn as nn
@@ -44,6 +46,9 @@ def train(model, args, opt, device, train_loader, val_loader):
     best_val_psnr = 0.0
     num_val_images = len(val_loader.dataset)
 
+    all_epoch_loss = []
+    all_epoch_psnr = []
+
     for ith_epoch in range(1, epochs + 1):
         model.train()
         epoch_loss = 0.0
@@ -77,6 +82,8 @@ def train(model, args, opt, device, train_loader, val_loader):
         scheduler.step()
         avg_epoch_loss = epoch_loss / len(train_loader)
 
+        all_epoch_loss.append(avg_epoch_loss)
+
 
         """
         3. Validation step
@@ -101,6 +108,8 @@ def train(model, args, opt, device, train_loader, val_loader):
         assert len(all_psnrs) == num_val_images, "Mismatch in number of PSNR values"
         this_psnr = np.mean(all_psnrs)
 
+        all_epoch_psnr.append(this_psnr)
+
         # Decide whether to save the current model
         SAVED = False
 
@@ -115,3 +124,42 @@ def train(model, args, opt, device, train_loader, val_loader):
         4. Print training and validation results of this epoch
         """
         print(f'Epoch [{ith_epoch}/{epochs}], Train Loss: {avg_epoch_loss:.6f}, Val_PSNR: {this_psnr:.4f}, ~{time.time()-start_time:.2f}s, Saved: {SAVED}')
+
+    """
+    5. Plot training loss and validation PSNR, save as two images
+    """
+    assert len(all_epoch_loss) == epochs, "Mismatch in number of training losses"
+    assert len(all_epoch_psnr) == epochs, "Mismatch in number of validation PSNRs"
+
+    plots_dir = args.input_dir
+
+    # Plot training loss
+    plt.figure(figsize=(10, 6))
+    plt.plot(range(1, epochs + 1), all_epoch_loss, 'b-', marker='o')
+    plt.title('Training Loss')
+    plt.xlabel('Epoch')
+    plt.ylabel('L1 Loss')
+    plt.grid(True)
+    plt.tight_layout()
+
+    # Save the plot
+    loss_plot_path = os.path.join(plots_dir, 'training_loss.png')
+    plt.savefig(loss_plot_path, dpi=300)
+    plt.close()
+
+    # Plot validation PSNR
+    plt.figure(figsize=(10, 6))
+    plt.plot(range(1, epochs + 1), all_epoch_psnr, 'g-', marker='o')
+    plt.title('Validation PSNR')
+    plt.xlabel('Epoch')
+    plt.ylabel('PSNR (dB)')
+    plt.grid(True)
+    plt.tight_layout()
+
+    # Save the plot
+    psnr_plot_path = os.path.join(plots_dir, 'validation_psnr.png')
+    plt.savefig(psnr_plot_path, dpi=300)
+    plt.close()
+
+    print(f"Training loss plot saved to: {loss_plot_path}")
+    print(f"Validation PSNR plot saved to: {psnr_plot_path}")
