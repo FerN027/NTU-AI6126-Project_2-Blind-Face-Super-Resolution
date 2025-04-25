@@ -6,15 +6,13 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.optim.lr_scheduler import CosineAnnealingLR
 
-from model import *
 from utils import degradation, compute_psnr
 
 
-def train(args, opt, device, train_loader, val_loader):
+def train(model, args, opt, device, train_loader, val_loader):
     """
-    0. Initialize the model
+    0. Initialize the model and move it to the specified device
     """
-    model = RCAN()
     model = model.to(device)
 
 
