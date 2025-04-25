@@ -20,23 +20,6 @@ if __name__ == "__main__":
     )
     print("Using device:", device)
 
-    # Initialize train, validation, and test data loaders
-    train_loader = get_data_loader(
-        'train',
-        FFHQsubDataset(opt),
-        args
-    )
-    val_loader = get_data_loader(
-        'val',
-        ValidationDataset(opt),
-        args
-    )
-    test_loader = get_data_loader(
-        'test',
-        TestDataset(opt, args),
-        args
-    )
-
     # ----------------------------------------------------------------------
     # Only define the model once here for good!
     model = RCAN()
@@ -57,10 +40,28 @@ if __name__ == "__main__":
 
 
     if not args.inferring:  # train and save weights
+        # Initialize train and validation data loaders
+        train_loader = get_data_loader(
+            'train',
+            FFHQsubDataset(opt),
+            args
+        )
+        val_loader = get_data_loader(
+            'val',
+            ValidationDataset(opt),
+            args
+        )
+
         print("Training...")
         train(model, args, opt, device, train_loader, val_loader)
         print("Done training!")
 
     else:  # load model werights and do the inferring
+        test_loader = get_data_loader(
+            'test',
+            TestDataset(opt, args),
+            args
+        )
+
         print("Inferring...")
         inference(model, args, device, test_loader)
