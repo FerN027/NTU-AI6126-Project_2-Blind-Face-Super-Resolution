@@ -77,6 +77,13 @@ def get_parser():
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
+        "--inferring", 
+        action="store_true",
+        default=False,
+        help="Set to True for inferring, False for training.",
+    )
+
+    parser.add_argument(
         "--device", "-d",
         type=str,
         default="cuda",
@@ -97,6 +104,18 @@ def get_parser():
         # required=True,
         default="./model.pth",
         help=".../.../.../model.pth",
+    )
+    parser.add_argument(
+        "--test_input_dir", "-ti",
+        type=str,
+        default="./data/test/LQ",
+        help="Directory containing the test images.",
+    )
+    parser.add_argument(
+        "--test_output_dir", "-to",
+        type=str,
+        default="./data/test/preds",
+        help="Directory to save the test results.",
     )
     # ----------------------------------------------------------------------
 
